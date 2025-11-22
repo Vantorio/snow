@@ -5,3 +5,7 @@ edition.workspace = true
 description = "A raknet implementation in Rust for Snow Software"
 
 [dependencies]
+bytes.workspace = true
+rand.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
