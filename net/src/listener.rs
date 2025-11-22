@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::error::{NetError, Result};
 use tokio::net::UdpSocket;
 
 /// A UDP listener for incoming connections.
@@ -18,7 +18,9 @@ impl Listener {
         // Bind to all available network interfaces
         let addr = format!("0.0.0.0:{}", port);
         // Bind the socket to the specified address
-        let socket = UdpSocket::bind(&addr).await?;
+        let socket = UdpSocket::bind(&addr)
+            .await
+            .map_err(|e| NetError::BindError(format!("Failed to bind to {}: {}", addr, e)))?;
 
         Ok(Self {
             server_guid,

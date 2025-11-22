@@ -1,6 +1,6 @@
 #[derive(Debug, thiserror::Error)]
 pub enum NetError {
-    #[error("Failed to bind to port {0}")]
+    #[error("Bind Error: {0}")]
     BindError(String),
     #[error("I/O Error: {0}")]
     Io(#[from] std::io::Error),
