@@ -5,7 +5,10 @@ edition.workspace = true
 description = "A raknet implementation in Rust for Snow Software"
 
 [dependencies]
+error = { path = "../error" }
+
 bytes.workspace = true
 rand.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
+tracing.workspace = true

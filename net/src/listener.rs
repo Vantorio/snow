@@ -1,55 +1,50 @@
-use crate::error::{NetError, Result};
-use tokio::net::UdpSocket;
+use std::fmt::Debug;
 
-/// A UDP listener for incoming connections.
+use error::{NetError, Result, ServerError};
+use tokio::net::{ToSocketAddrs, UdpSocket};
+use tracing::{info, warn};
+
+const BUFFER_SIZE: usize = 1472;
+
 pub struct Listener {
-    /// The unique identifier for the server.
-    server_guid: u64,
-    /// The UDP socket used for listening.
+    guid: u64,
     socket: UdpSocket,
 }
 
 impl Listener {
-    /// Binds a new UDP listener to the specified port.
-    pub async fn bind(port: u16) -> Result<Self> {
-        // Generate a random server GUID
-        let server_guid = rand::random();
+    pub async fn bind<A: ToSocketAddrs + Debug>(addr: A) -> Result<Self> {
+        let guid = rand::random();
 
-        // Bind to all available network interfaces
-        let addr = format!("0.0.0.0:{}", port);
-        // Bind the socket to the specified address
         let socket = UdpSocket::bind(&addr)
             .await
-            .map_err(|e| NetError::BindError(format!("Failed to bind to {}: {}", addr, e)))?;
+            .map_err(|e| NetError::BindError(format!("Failed to bind to {:?}: {}", addr, e)))
+            .map_err(ServerError::Net)?;
 
-        Ok(Self {
-            server_guid,
-            socket,
-        })
+        Ok(Self { guid, socket })
     }
 
-    /// Accepts a new connection from the listener.
-    pub async fn accept(&self) -> Result<()> {
-        // Temporary placeholder to avoid clippy throw an error
-        println!("Server guid: {}", self.server_guid);
+    pub async fn listen(&self) -> Result<()> {
+        info!("Server listening (GUID: {})", self.guid);
 
-        // Buffer to store incoming data
-        let mut buf = [0; 2048];
+        let mut buf = [0u8; BUFFER_SIZE];
 
         loop {
-            // Receive data from the socket
-            let (size, addr) = self.socket.recv_from(&mut buf).await?;
+            let (size, addr) = match self.socket.recv_from(&mut buf).await {
+                Ok(result) => result,
+                Err(e) => {
+                    warn!("Failed to receive packet: {}", e);
+                    continue;
+                }
+            };
 
-            // Temporary placeholder to avoid clippy throw an error
-            println!("Received data from: {:?}", addr);
-
-            // Process the received data
-            let packet = &buf[..size];
-
-            // Check if the packet is empty
-            if packet.is_empty() {
+            // Validate size early
+            if size == 0 {
                 continue;
             }
+
+            let _packet = &buf[..size];
+
+            tracing::trace!("Received {} bytes from {}", size, addr);
         }
     }
 }

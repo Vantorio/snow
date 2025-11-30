@@ -1,12 +1,22 @@
 use server::Server;
 
-use crate::error::Result;
+use error::Result;
+use tracing::info;
 
-pub mod error;
+mod config;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let server = Server::new().await?;
+    let settings = config::Config::new()?;
+
+    info!(
+        "Configuration loaded. Host: {}, Port: {}",
+        settings.network.host, settings.network.port
+    );
+
+    let server = Server::new(settings.network.host, settings.network.port).await?;
+
     server.start().await?;
+
     Ok(())
 }
