@@ -41,14 +41,12 @@ workspace = true
 [[bin]]
 path = "src/main.rs"
 name = "core"
-plugin = false
 proc-macro = false
 required-features = []
 
 [lib]
 path = "src/lib.rs"
 name = "core"
-plugin = false
 proc-macro = false
 required-features = []
 crate-type = ["lib"]

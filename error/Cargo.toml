@@ -17,7 +17,6 @@ workspace = true
 [lib]
 path = "src/lib.rs"
 name = "error"
-plugin = false
 proc-macro = false
 required-features = []
 crate-type = ["lib"]

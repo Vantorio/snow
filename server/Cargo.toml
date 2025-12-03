@@ -26,7 +26,6 @@ workspace = true
 [lib]
 path = "src/lib.rs"
 name = "server"
-plugin = false
 proc-macro = false
 required-features = []
 crate-type = ["lib"]
