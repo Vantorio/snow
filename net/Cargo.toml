@@ -2,34 +2,18 @@
 name = "net"
 version = "0.0.1"
 description = "A raknet implementation in Rust for Snow Software"
+edition = "2024"
+license = "MIT"
 
-[package.edition]
-workspace = true
+[dependencies]
+error = { path = "../error" }
 
-[package.license]
-workspace = true
-
-[dependencies.bytes]
-workspace = true
-
-[dependencies.error]
-path = "../error"
-
-[dependencies.rand]
-workspace = true
-
-[dependencies.thiserror]
-workspace = true
-
-[dependencies.tokio]
-workspace = true
-
-[dependencies.tracing]
-workspace = true
+bytes = { workspace = true }
+rand = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
 
 [lib]
 path = "src/lib.rs"
 name = "net"
-proc-macro = false
-required-features = []
-crate-type = ["lib"]

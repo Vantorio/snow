@@ -1,22 +1,13 @@
 [package]
 name = "error"
 version = "0.0.1"
+edition = "2024"
+license = "MIT"
 
-[package.edition]
-workspace = true
-
-[package.license]
-workspace = true
-
-[dependencies.config]
-workspace = true
-
-[dependencies.thiserror]
-workspace = true
+[dependencies]
+config = { workspace = true }
+thiserror = { workspace = true }
 
 [lib]
 path = "src/lib.rs"
 name = "error"
-proc-macro = false
-required-features = []
-crate-type = ["lib"]

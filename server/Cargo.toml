@@ -1,31 +1,17 @@
 [package]
 name = "server"
 version = "0.0.1"
+edition = "2024"
+license = "MIT"
 
-[package.edition]
-workspace = true
+[dependencies]
+error = { path = "../error" }
+net = { path = "../net" }
 
-[package.license]
-workspace = true
-
-[dependencies.error]
-path = "../error"
-
-[dependencies.net]
-path = "../net"
-
-[dependencies.thiserror]
-workspace = true
-
-[dependencies.tokio]
-workspace = true
-
-[dependencies.tracing]
-workspace = true
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
 
 [lib]
 path = "src/lib.rs"
 name = "server"
-proc-macro = false
-required-features = []
-crate-type = ["lib"]
