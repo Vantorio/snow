@@ -1,7 +1,6 @@
 [package]
-name = "net"
+name = "core"
 version = "0.0.1"
-description = "A raknet implementation in Rust for Snow Software"
 
 [package.edition]
 workspace = true
@@ -9,14 +8,20 @@ workspace = true
 [package.license]
 workspace = true
 
-[dependencies.bytes]
+[dependencies.config]
 workspace = true
 
 [dependencies.error]
 path = "../error"
 
-[dependencies.rand]
+[dependencies.net]
+path = "../net"
+
+[dependencies.serde]
 workspace = true
+
+[dependencies.server]
+path = "../server"
 
 [dependencies.thiserror]
 workspace = true
@@ -24,12 +29,25 @@ workspace = true
 [dependencies.tokio]
 workspace = true
 
+[dependencies.toml]
+workspace = true
+
 [dependencies.tracing]
 workspace = true
 
+[dependencies.tracing-subscriber]
+workspace = true
+
+[[bin]]
+path = "src/main.rs"
+name = "core"
+plugin = false
+proc-macro = false
+required-features = []
+
 [lib]
 path = "src/lib.rs"
-name = "net"
+name = "core"
 plugin = false
 proc-macro = false
 required-features = []

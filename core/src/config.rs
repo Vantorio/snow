@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::{fs, io};
+use tracing::info;
 
 const CONFIG_FILE_NAME: &str = "config.toml";
 
@@ -42,20 +43,14 @@ impl Config {
 
     pub fn new() -> Result<Self, io::Error> {
         if fs::metadata(CONFIG_FILE_NAME).is_err() {
-            tracing::info!(
-                "Configuration file '{}' not found. Creating default file.",
-                CONFIG_FILE_NAME
-            );
+            info!("Configuration file '{}' not found. Creating default file.", CONFIG_FILE_NAME);
 
             let default_config = Self::default();
 
             let toml_string = match toml::to_string_pretty(&default_config) {
                 Ok(s) => s,
                 Err(e) => {
-                    return Err(io::Error::other(format!(
-                        "Failed to serialize default config: {}",
-                        e
-                    )));
+                    return Err(io::Error::other(format!("Failed to serialize default config: {}", e)));
                 }
             };
 

@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use error::{NetError, Result, ServerError};
+use error::{Error, NetError, Result};
 use tokio::net::{ToSocketAddrs, UdpSocket};
 use tracing::{info, warn};
 
@@ -18,18 +18,21 @@ impl Listener {
         let socket = UdpSocket::bind(&addr)
             .await
             .map_err(|e| NetError::BindError(format!("Failed to bind to {:?}: {}", addr, e)))
-            .map_err(ServerError::Net)?;
+            .map_err(Error::Net)?;
 
         Ok(Self { guid, socket })
     }
 
     pub async fn listen(&self) -> Result<()> {
-        info!("Server listening (GUID: {})", self.guid);
+        info!("Server running on {}", self.socket.local_addr()?);
+        info!("Press CTRL + C to exit.");
+
+        let _temp = self.guid;
 
         let mut buf = [0u8; BUFFER_SIZE];
 
         loop {
-            let (size, addr) = match self.socket.recv_from(&mut buf).await {
+            let (size, src) = match self.socket.recv_from(&mut buf).await {
                 Ok(result) => result,
                 Err(e) => {
                     warn!("Failed to receive packet: {}", e);
@@ -44,7 +47,7 @@ impl Listener {
 
             let _packet = &buf[..size];
 
-            tracing::trace!("Received {} bytes from {}", size, addr);
+            tracing::trace!("Received {} bytes from {}", size, src);
         }
     }
 }
