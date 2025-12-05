@@ -1,7 +1,11 @@
 use net::listener::Listener;
 use tokio::signal;
 
+use tracing::info;
+
 use error::Result;
+
+const CURRENT_MINECRAFT_VERSION: &str = "1.21.124";
 
 pub struct Server {
     host: String,
@@ -19,13 +23,15 @@ impl Server {
         let addr = format!("{}:{}", self.host, self.port);
         let listener = Listener::bind(addr).await?;
 
+        info!("Starting server for MCBE v{}", CURRENT_MINECRAFT_VERSION,);
+
         tokio::select! {
             result = listener.listen() => {
                 result?;
                 Ok(())
             }
             _ = signal::ctrl_c() => {
-                tracing::info!("Shutdown signal received. Shutting down server...");
+                info!("Shutdown signal received. Shutting down server...");
                 Ok(())
             }
         }

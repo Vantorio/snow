@@ -1,25 +1,24 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, sync::Arc};
 
 use error::{Error, NetError, Result};
 use tokio::net::{ToSocketAddrs, UdpSocket};
-use tracing::{info, warn};
+use tracing::{info, trace, warn};
 
-const BUFFER_SIZE: usize = 1472;
+const DEFAULT_BUFFER_SIZE: usize = 2048;
 
 pub struct Listener {
     guid: u64,
-    socket: UdpSocket,
+    socket: Arc<UdpSocket>,
 }
 
 impl Listener {
     pub async fn bind<A: ToSocketAddrs + Debug>(addr: A) -> Result<Self> {
         let guid = rand::random();
-
         let socket = UdpSocket::bind(&addr)
             .await
             .map_err(|e| NetError::BindError(format!("Failed to bind to {:?}: {}", addr, e)))
             .map_err(Error::Net)?;
-
+        let socket = Arc::new(socket);
         Ok(Self { guid, socket })
     }
 
@@ -29,10 +28,10 @@ impl Listener {
 
         let _temp = self.guid;
 
-        let mut buf = [0u8; BUFFER_SIZE];
+        let mut buf = [0u8; DEFAULT_BUFFER_SIZE];
 
         loop {
-            let (size, src) = match self.socket.recv_from(&mut buf).await {
+            let (len, src) = match self.socket.recv_from(&mut buf).await {
                 Ok(result) => result,
                 Err(e) => {
                     warn!("Failed to receive packet: {}", e);
@@ -41,13 +40,13 @@ impl Listener {
             };
 
             // Validate size early
-            if size == 0 {
+            if len == 0 {
                 continue;
             }
 
-            let _packet = &buf[..size];
+            let _packet = &buf[..len];
 
-            tracing::trace!("Received {} bytes from {}", size, src);
+            trace!("Received {} bytes from {}", len, src);
         }
     }
 }
